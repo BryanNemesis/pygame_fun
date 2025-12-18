@@ -5,8 +5,8 @@ from utility import OffsetBox
 
 pygame.init()
 
-CELL_SIZE_PX = 120
-GRID_HEIGHT, GRID_WIDTH = 5, 7
+CELL_SIZE_PX = 68
+GRID_HEIGHT, GRID_WIDTH = 8, 12
 OFFSET_TOP, OFFSET = 100, 20
 screen = pygame.display.set_mode(
     [
@@ -18,8 +18,13 @@ clock = pygame.time.Clock()
 running = True
 
 grid = Grid(GRID_WIDTH, GRID_HEIGHT, CELL_SIZE_PX, OFFSET, OFFSET_TOP)
-player = Character("../kenney_animal-pack-redux/PNG/Round (outline)/chicken.png", CELL_SIZE_PX)
+player = Character("../kenney_animal-pack-redux/PNG/Round without details (Outline)/chicken.png", CELL_SIZE_PX)
 player.set_to_grid(grid)
+
+title = pygame.image.load("./logo.png")
+title_rect = title.get_rect()
+title_rect.center = [screen.get_width() // 2, OFFSET_TOP // 2]
+
 
 while running:
     for event in pygame.event.get():
@@ -36,14 +41,17 @@ while running:
             elif event.key == pygame.K_d:
                 player.move_right()
 
-    screen.fill("white")
+    screen.fill("#92A2F7")
     pygame.key.set_repeat(200, 200)
 
     player.update_pos()
+    grid.draw_bg(screen)
     grid.draw_as_dots(screen)
-    grid.draw_borders(screen)
     # supposedly using convert makes it render quicker
     screen.blit(player.sprite.convert(screen), player.rect)
+    screen.blit(title, title_rect)
+    grid.draw_borders(screen)
+
     pygame.display.flip()
 
     dt = clock.tick(60) / 1000

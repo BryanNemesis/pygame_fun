@@ -11,6 +11,12 @@ class Grid:
         self.cell_size_px = cell_size_px
         self.offset = offset
         self.offset_top = offset_top
+        self.rect: pygame.Rect = [
+            self.offset,
+            self.offset_top,
+            self.width * self.cell_size_px,
+            self.height * self.cell_size_px,
+        ]
 
         self.rows = [
             [
@@ -31,15 +37,10 @@ class Grid:
             for cell in row:
                 pygame.draw.circle(screen, "black", cell, 1)
 
-    def draw_borders(self, screen):
-        pygame.draw.rect(
-            screen,
-            "black",
-            [
-                self.offset,
-                self.offset_top,
-                self.width * self.cell_size_px,
-                self.height * self.cell_size_px,
-            ],
-            1
-        )
+    def draw_borders(self, screen: pygame.Surface):
+        pygame.draw.rect(screen, "black", self.rect, 1)
+
+    def draw_bg(self, screen: pygame.Surface):
+        screen.fill("#343434", self.rect)
+
+    
