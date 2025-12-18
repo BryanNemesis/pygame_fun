@@ -1,0 +1,3 @@
+- width and height should be properties of the grid, not global vars
+- allow grid to draw points of each cell and borders
+- allow placing of the grid anywhere within the screen area
