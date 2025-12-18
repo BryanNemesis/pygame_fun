@@ -1,11 +1,12 @@
 import pygame
-from position import Position
+from utility import Position
 from grid import Grid
 
 
 class Character:
-    def __init__(self, sprite):
-        self.sprite = pygame.image.load(sprite)
+    def __init__(self, sprite, size_px):
+        sprite = pygame.image.load(sprite)
+        self.sprite = pygame.transform.scale(sprite, [size_px, size_px])
         self.rect = self.sprite.get_rect()
         self.pos = Position()
         self.target_pos = Position()
@@ -15,7 +16,7 @@ class Character:
 
     def set_to_grid(self, grid: Grid):
         self.grid = grid
-        self.update_pos()
+        self.rect.center = self.grid.get_cell_center(self.pos)
 
     def create_path(self):
         init_pos_px = self.grid.get_cell_center(self.pos)

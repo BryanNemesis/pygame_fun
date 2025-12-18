@@ -1,3 +1,2 @@
-- width and height should be properties of the grid, not global vars
-- allow grid to draw points of each cell and borders
+- fix the issue of duality of naming of cell and pixel positions
 - allow placing of the grid anywhere within the screen area

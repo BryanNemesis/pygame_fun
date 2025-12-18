@@ -1,18 +1,22 @@
 import pygame
-from position import Position
+from utility import Position, OffsetBox
 
 
 class Grid:
-    def __init__(self, width, height, base_size_px):
+    def __init__(self, width, height, cell_size_px, offset, offset_top):
         # these are centers of each cell
         # is there a better way to do this? its kinda obscure
         self.width = width
         self.height = height
+        self.cell_size_px = cell_size_px
+        self.offset = offset
+        self.offset_top = offset_top
+
         self.rows = [
             [
                 (
-                    x * base_size_px - base_size_px // 2,
-                    y * base_size_px - base_size_px // 2,
+                    (x * cell_size_px - cell_size_px // 2) + offset,
+                    (y * cell_size_px - cell_size_px // 2) + offset_top,
                 )
                 for x in range(1, width + 1)
             ]
@@ -25,4 +29,17 @@ class Grid:
     def draw_as_dots(self, screen: pygame.Surface):
         for row in self.rows:
             for cell in row:
-                pygame.draw.circle(screen, "grey", cell, 2)
+                pygame.draw.circle(screen, "black", cell, 1)
+
+    def draw_borders(self, screen):
+        pygame.draw.rect(
+            screen,
+            "black",
+            [
+                self.offset,
+                self.offset_top,
+                self.width * self.cell_size_px,
+                self.height * self.cell_size_px,
+            ],
+            1
+        )
