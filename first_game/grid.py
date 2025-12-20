@@ -1,5 +1,5 @@
 import pygame
-from utility import Position, OffsetBox
+from utility import Position
 
 
 class Grid:
