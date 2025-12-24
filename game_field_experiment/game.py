@@ -39,8 +39,7 @@ view = pygame.Surface(VIEW_DIMENSIONS * CELL_SIZE_PX)
 # Create level
 level = Level(LEVEL_DIMENSIONS, CELL_SIZE_PX)
 
-
-# Initialize player character
+# Create player character
 player = Character(
     "../kenney_animal-pack-redux/PNG/Round without details (Outline)/chicken.png",
     CELL_SIZE_PX,
@@ -64,13 +63,13 @@ while running:
             elif event.key == pygame.K_RIGHT:
                 player.move_right()
 
-
     # Draw the level
     level.surface.fill("white")
     level.draw_coordinates()
-    level.surface.blit(
-        player.sprite, player.pos * CELL_SIZE_PX
-    )
+
+    # Draw the player onto the level
+    player.update_pos()
+    level.surface.blit(player.sprite, player.pos * CELL_SIZE_PX)
 
     # Calculate the level's offset within the view
     level_offset = level.get_offset(player, VIEW_DIMENSIONS)
@@ -78,14 +77,13 @@ while running:
     # Draw the level within the view
     view.fill("black")
     view.blit(level.surface, -level_offset * CELL_SIZE_PX)
-    
+
     # Draw a border around the view
     pygame.draw.rect(view, "black", view.get_rect(), 1)
 
     # Draw the view within the screen
     screen.fill("#828282")
     screen.blit(view, (VIEW_OFFSET, VIEW_OFFSET_TOP))
-
 
     # Display the game
     pygame.display.flip()
