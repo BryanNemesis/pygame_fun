@@ -1,6 +1,8 @@
 import pygame
-from utility import Position
-from level import Level
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from game_field_experiment.level import Level
 
 class Character:
     def __init__(self, sprite, size_px):
@@ -8,7 +10,8 @@ class Character:
         self.sprite = pygame.transform.scale(sprite, [size_px, size_px])
         self.rect = self.sprite.get_rect()
 
-    def set_to_level(self, level: Level, position=Position(0, 0)):
+    # Put the character onto a level on the given position
+    def set_to_level(self, level: "Level", position=pygame.Vector2(0, 0)):
         self.level = level
         self.pos = position
 
@@ -17,7 +20,7 @@ class Character:
             self.pos.y -= 1
 
     def move_down(self):
-        if self.pos.y < self.level.height - 1:
+        if self.pos.y < self.level.size.y - 1:
             self.pos.y += 1
 
     def move_left(self):
@@ -25,5 +28,5 @@ class Character:
             self.pos.x -= 1
 
     def move_right(self):
-        if self.pos.x < self.level.width - 1:
+        if self.pos.x < self.level.size.x - 1:
             self.pos.x += 1
