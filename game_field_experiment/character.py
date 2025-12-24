@@ -12,7 +12,8 @@ class Character:
         self.sprite = pygame.transform.scale(sprite, [size_px, size_px])
         self.rect = self.sprite.get_rect()
         self.moving = False
-        self.mspd = 5
+        # 1 is slow as fuck, 10 is fast as shit
+        self.mspd = 1
 
     # Put the character onto a level on the given position
     def set_to_level(self, level: "Level", position=pygame.Vector2(0, 0)):
