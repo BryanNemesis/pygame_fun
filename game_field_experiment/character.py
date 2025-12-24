@@ -1,4 +1,5 @@
 import pygame
+import math
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -12,7 +13,6 @@ class Character:
         self.rect = self.sprite.get_rect()
         self.moving = False
         self.mspd = 5
-        self.path = ()
 
     # Put the character onto a level on the given position
     def set_to_level(self, level: "Level", position=pygame.Vector2(0, 0)):
@@ -21,47 +21,49 @@ class Character:
         self.target_pos = position.copy()
 
     def move_up(self):
-        if self.pos.y > 0:
+        if not self.moving and self.pos.y > 0:
             self.moving = True
             self.target_pos.y -= 1
-            self.create_path()
 
     def move_down(self):
-        if self.pos.y < self.level.size.y - 1:
+        if not self.moving and self.pos.y < self.level.size.y - 1:
             self.moving = True
             self.target_pos.y += 1
-            self.create_path()
 
     def move_left(self):
-        if self.pos.x > 0:
+        if not self.moving and self.pos.x > 0:
             self.moving = True
             self.target_pos.x -= 1
-            self.create_path()
 
     def move_right(self):
-        if self.pos.x < self.level.size.x - 1:
+        if not self.moving and self.pos.x < self.level.size.x - 1:
             self.moving = True
             self.target_pos.x += 1
-            self.create_path()
 
-    def create_path(self):
-        weights = [i / (self.mspd) for i in range(self.mspd + 1)][1:]
-
-        self.path = iter(
-            [
-                pygame.Vector2(
-                    pygame.math.lerp(self.pos.x, self.target_pos.x, weight),
-                    pygame.math.lerp(self.pos.y, self.target_pos.y, weight),
-                )
-                for weight in weights
-            ]
-        )
-
-    def update_pos(self):
+    # Move the character towards the target_position based on its move speed.
+    def update_pos(self, dt: float):
+        # TODO: This can be done more cleverly for sure!!!
         if self.moving:
-            try:
-                new_pos = next(self.path)
-                self.pos = new_pos
-            except StopIteration:
-                self.moving = False
-                self.path = ()
+            if self.target_pos.x > self.pos.x:
+                self.pos.x += (dt * self.mspd) / 1000
+                if self.target_pos.x <= self.pos.x:
+                    self.pos.x = math.floor(self.pos.x)
+                    self.moving = False
+
+            if self.target_pos.x < self.pos.x:
+                self.pos.x -= (dt * self.mspd) / 1000
+                if self.target_pos.x >= self.pos.x:
+                    self.pos.x = math.ceil(self.pos.x)
+                    self.moving = False
+
+            if self.target_pos.y > self.pos.y:
+                self.pos.y += (dt * self.mspd) / 1000
+                if self.target_pos.y <= self.pos.y:
+                    self.pos.y = math.floor(self.pos.y)
+                    self.moving = False
+
+            if self.target_pos.y < self.pos.y:
+                self.pos.y -= (dt * self.mspd) / 1000
+                if self.target_pos.y >= self.pos.y:
+                    self.pos.y = math.ceil(self.pos.y)
+                    self.moving = False

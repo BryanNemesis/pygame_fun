@@ -23,7 +23,9 @@ VIEW_OFFSET_TOP, VIEW_OFFSET = 50, 20
 
 # Pygame stuff
 clock = pygame.time.Clock()
+dt = 0
 running = True
+pygame.key.set_repeat(200, 200)
 
 # Create screen
 screen = pygame.display.set_mode(
@@ -68,7 +70,7 @@ while running:
     level.draw_coordinates()
 
     # Draw the player onto the level
-    player.update_pos()
+    player.update_pos(dt)
     level.surface.blit(player.sprite, player.pos * CELL_SIZE_PX)
 
     # Calculate the level's offset within the view
@@ -89,7 +91,7 @@ while running:
     pygame.display.flip()
 
     # Tick the clock
-    dt = clock.tick(60) / 1000
+    dt = clock.tick(60)
 
 
 pygame.quit()
