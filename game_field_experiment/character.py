@@ -1,5 +1,4 @@
 import pygame
-import math
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -13,7 +12,8 @@ class Character:
         self.rect = self.sprite.get_rect()
         self.moving = False
         # 1 is slow as fuck, 10 is fast as shit
-        self.mspd = 1
+        # TODO: make this unit mean something
+        self.mspd = 5
 
     # Put the character onto a level on the given position
     def set_to_level(self, level: "Level", position=pygame.Vector2(0, 0)):
@@ -43,28 +43,9 @@ class Character:
 
     # Move the character towards the target_position based on its move speed.
     def update_pos(self, dt: float):
-        # TODO: This can be done more cleverly for sure!!!
         if self.moving:
-            if self.target_pos.x > self.pos.x:
-                self.pos.x += (dt * self.mspd) / 1000
-                if self.target_pos.x <= self.pos.x:
-                    self.pos.x = math.floor(self.pos.x)
-                    self.moving = False
-
-            if self.target_pos.x < self.pos.x:
-                self.pos.x -= (dt * self.mspd) / 1000
-                if self.target_pos.x >= self.pos.x:
-                    self.pos.x = math.ceil(self.pos.x)
-                    self.moving = False
-
-            if self.target_pos.y > self.pos.y:
-                self.pos.y += (dt * self.mspd) / 1000
-                if self.target_pos.y <= self.pos.y:
-                    self.pos.y = math.floor(self.pos.y)
-                    self.moving = False
-
-            if self.target_pos.y < self.pos.y:
-                self.pos.y -= (dt * self.mspd) / 1000
-                if self.target_pos.y >= self.pos.y:
-                    self.pos.y = math.ceil(self.pos.y)
-                    self.moving = False
+            direction = (self.target_pos - self.pos).normalize()
+            self.pos += (direction * dt * self.mspd) / 1000
+            if (self.target_pos - self.pos).normalize() != direction:
+                self.pos = self.target_pos.copy()
+                self.moving = False
