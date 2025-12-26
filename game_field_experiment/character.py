@@ -3,14 +3,25 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from game_field_experiment.level import Level
+    from game_field_experiment.sprite_provider import SpriteProvider
 
 
-class Character:
-    def __init__(self, sprite, size_px):
-        sprite = pygame.image.load(sprite)
-        self.sprite = pygame.transform.scale(sprite, [size_px, size_px])
-        self.rect = self.sprite.get_rect()
+class Character(pygame.Surface):
+    direction_vectors = {
+        "left": pygame.Vector2((-1, 0)),
+        "right": pygame.Vector2((1, 0)),
+        "up": pygame.Vector2((0, -1)),
+        "down": pygame.Vector2((0, 1)),
+    }
+
+    def __init__(self, sprites: "SpriteProvider", size_px):
+        super().__init__((size_px, size_px))
+        self.sprite_provider = sprites
+        self.sprite = sprites.murphy
+
         self.moving = False
+        self.direction = None
+
         # 1 is slow as fuck, 10 is fast as shit
         # TODO: make this unit mean something
         self.mspd = 5
@@ -24,28 +35,49 @@ class Character:
     def move_up(self):
         if not self.moving and self.pos.y > 0:
             self.moving = True
+            self.direction = "up"
             self.target_pos.y -= 1
 
     def move_down(self):
         if not self.moving and self.pos.y < self.level.size.y - 1:
             self.moving = True
+            self.direction = "down"
             self.target_pos.y += 1
 
     def move_left(self):
         if not self.moving and self.pos.x > 0:
             self.moving = True
+            self.direction = "left"
             self.target_pos.x -= 1
 
     def move_right(self):
         if not self.moving and self.pos.x < self.level.size.x - 1:
             self.moving = True
+            self.direction = "right"
             self.target_pos.x += 1
 
     # Move the character towards the target_position based on its move speed.
     def update_pos(self, dt: float):
         if self.moving:
-            direction = (self.target_pos - self.pos).normalize()
-            self.pos += (direction * dt * self.mspd) / 1000
-            if (self.target_pos - self.pos).normalize() != direction:
+            self.pos += (
+                Character.direction_vectors[self.direction] * dt * self.mspd
+            ) / 1000
+
+            if (self.target_pos - self.pos).magnitude_squared() < 0.01:
                 self.pos = self.target_pos.copy()
                 self.moving = False
+                self.direction = None
+
+    def update_sprite(self, pressed):
+        if (
+            not self.direction
+            and not pressed[pygame.K_UP]
+            and not pressed[pygame.K_DOWN]
+            and not pressed[pygame.K_LEFT]
+            and not pressed[pygame.K_RIGHT]
+        ):
+            self.sprite = self.sprite_provider.murphy
+        elif self.direction in ["left", "up"]:
+            self.sprite = self.sprite_provider.murphy_moving_left
+        elif self.direction in ["right", "down"]:
+            self.sprite = self.sprite_provider.murphy_moving_right

@@ -24,8 +24,8 @@ class Level:
     def draw_coordinates(self):
         for x, row in enumerate(self.cells):
             for y, cell in enumerate(row):
-                text = f"({x},{y})"
-                text_surface = self._font.render(text, False, "#7c7c7c")
+                text = f"{x},{y}"
+                text_surface = self._font.render(text, False, "#22ff00")
                 text_rect = text_surface.get_rect()
                 text_rect.center = [
                     cell.x + self.cell_size_px // 2,
