@@ -76,7 +76,13 @@ class Character(pygame.Surface):
             and not pressed[pygame.K_RIGHT]
         ):
             self.sprite = self.sprite_provider.murphy
-        elif self.direction in ["left", "up"]:
-            self.sprite = self.sprite_provider.murphy_moving_left
-        elif self.direction in ["right", "down"]:
-            self.sprite = self.sprite_provider.murphy_moving_right
+
+        elif self.direction:
+            # pretty good measure of progress of movement to the next cell
+            progress = abs(self.direction_vectors[self.direction] * self.pos) % 1
+
+            if self.direction in ["left", "up"]:
+                self.sprite = self.sprite_provider.murphy_moving_left_list[round(progress * 14)]
+
+            elif self.direction in ["right", "down"]:
+                self.sprite = self.sprite_provider.murphy_moving_right_list[round(progress * 14)]

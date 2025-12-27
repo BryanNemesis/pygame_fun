@@ -92,6 +92,7 @@ while running:
     screen.blit(view, (VIEW_OFFSET, VIEW_OFFSET_TOP))
 
     # Display the game
+    pygame.display.set_caption("supaplex ultimate")
     pygame.display.flip()
 
     # Tick the clock
