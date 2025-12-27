@@ -22,9 +22,8 @@ class Character(pygame.Surface):
         self.moving = False
         self.direction = None
 
-        # 1 is slow as fuck, 10 is fast as shit
-        # TODO: make this unit mean something
-        self.mspd = 5
+        # How many miliseconds it takes to cross 1 field
+        self.mspd = 200
 
     # Put the character onto a level on the given position
     def set_to_level(self, level: "Level", position=pygame.Vector2(0, 0)):
@@ -60,10 +59,10 @@ class Character(pygame.Surface):
     def update_pos(self, dt: float):
         if self.moving:
             self.pos += (
-                Character.direction_vectors[self.direction] * dt * self.mspd
-            ) / 1000
+                Character.direction_vectors[self.direction] * dt / self.mspd
+            )
 
-            if (self.target_pos - self.pos).magnitude_squared() < 0.01:
+            if (self.target_pos - self.pos).magnitude_squared() < 0.002:
                 self.pos = self.target_pos.copy()
                 self.moving = False
                 self.direction = None
