@@ -2,10 +2,12 @@ import pygame
 from itertools import chain
 
 
-# Use this class directly, do not create instances of it.
 class SpriteProvider:
     orig_size = 16
     target_size = 48
+
+    def __init__(self):
+        raise RuntimeError('Use the SpriteProvider class directly')
 
     @classmethod
     def initialize(cls):
