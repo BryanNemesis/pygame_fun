@@ -2,56 +2,54 @@ import pygame
 from itertools import chain
 
 
+# Use this class directly, do not create instances of it.
 class SpriteProvider:
-    def __init__(self):
-        self.size = 16
-        self.target_size = 48
+    orig_size = 16
+    target_size = 48
+
+    @classmethod
+    def initialize(cls):
 
         # Load the files containing the sprites
-        self._fixed = pygame.image.load("./assets/sprites/Megaplex_Sprites/FIXED.GIF")
-        self._moving = pygame.image.load("./assets/sprites/Megaplex_Sprites/MOVING.GIF")
+        cls._fixed = pygame.image.load("./assets/sprites/Megaplex_Sprites/FIXED.GIF")
+        cls._moving = pygame.image.load("./assets/sprites/Megaplex_Sprites/MOVING.GIF")
 
         # Map regions of the sprites to specific game elements
 
         # Murphy
-        self.murphy = self._prep_sprite(self._fixed, row=0, column=3)
-        self.murphy_moving_left = self._prep_sprite(
-            self._moving, 0, 4, extra_y_offset=2
-        )
-        self.murphy_moving_right = self._prep_sprite(
-            self._moving, 3, 4, extra_y_offset=2
-        )
+        cls.murphy = cls._prep_sprite(cls._fixed, row=0, column=3)
 
         # TODO: this shit is ugly af!!!
-        self.murphy_moving_left_list = [
-            self._prep_sprite(
-                self._moving, row=2, column=3 + i, extra_x_offset=(i * 14) - 2
+        cls.murphy_moving_left = [
+            cls._prep_sprite(
+                cls._moving, row=2, column=3 + i, extra_x_offset=(i * 14) - 2
             )
             for i in chain(range(7, 0, -1), range(8))
         ]
 
-        self.murphy_moving_right_list = (
+        cls.murphy_moving_right = (
             [
-                self._prep_sprite(
-                    self._moving, row=3, column=i, extra_x_offset=(i * 18) + 4
+                cls._prep_sprite(
+                    cls._moving, row=3, column=i, extra_x_offset=(i * 18) + 4
                 )
                 for i in range(6, -1, -1)
             ]
             + [
-                self._prep_sprite(
-                    self._moving, row=2, column=11, extra_x_offset=(8 * 14) + 2
+                cls._prep_sprite(
+                    cls._moving, row=2, column=11, extra_x_offset=(8 * 14) + 2
                 )
             ]
             + [
-                self._prep_sprite(
-                    self._moving, row=3, column=i, extra_x_offset=(i * 18) + 4
+                cls._prep_sprite(
+                    cls._moving, row=3, column=i, extra_x_offset=(i * 18) + 4
                 )
                 for i in range(7)
             ]
         )
 
+    @classmethod
     def _prep_sprite(
-        self,
+        cls,
         sprite: pygame.Surface,
         column: int,
         row: int,
@@ -62,11 +60,11 @@ class SpriteProvider:
             sprite.subsurface(
                 pygame.Rect(
                     (
-                        self.size * column + extra_x_offset,
-                        self.size * row + extra_y_offset,
+                        cls.orig_size * column + extra_x_offset,
+                        cls.orig_size * row + extra_y_offset,
                     ),
-                    (self.size, self.size),
+                    (cls.orig_size, cls.orig_size),
                 )
             ),
-            (self.target_size, self.target_size),
+            (cls.target_size, cls.target_size),
         )

@@ -41,13 +41,10 @@ view = pygame.Surface(VIEW_DIMENSIONS * CELL_SIZE_PX)
 # Create level
 level = Level(LEVEL_DIMENSIONS, CELL_SIZE_PX)
 
-sprites = SpriteProvider()
+SpriteProvider.initialize()
 
 # Create player character
-player = Character(
-    sprites,
-    CELL_SIZE_PX,
-)
+player = Character(CELL_SIZE_PX)
 player.set_to_level(level, pygame.Vector2(0, 0))
 
 

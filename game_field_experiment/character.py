@@ -1,9 +1,9 @@
 import pygame
+from sprite_provider import SpriteProvider
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from game_field_experiment.level import Level
-    from game_field_experiment.sprite_provider import SpriteProvider
 
 
 class Character(pygame.Surface):
@@ -14,10 +14,9 @@ class Character(pygame.Surface):
         "down": pygame.Vector2((0, 1)),
     }
 
-    def __init__(self, sprites: "SpriteProvider", size_px):
+    def __init__(self, size_px):
         super().__init__((size_px, size_px))
-        self.sprite_provider = sprites
-        self.sprite = sprites.murphy
+        self.sprite = SpriteProvider.murphy
 
         self.moving = False
         self.direction = None
@@ -75,14 +74,14 @@ class Character(pygame.Surface):
             and not pressed[pygame.K_LEFT]
             and not pressed[pygame.K_RIGHT]
         ):
-            self.sprite = self.sprite_provider.murphy
+            self.sprite = SpriteProvider.murphy
 
         elif self.direction:
             # pretty good measure of progress of movement to the next cell
             progress = abs(self.direction_vectors[self.direction] * self.pos) % 1
 
             if self.direction in ["left", "up"]:
-                self.sprite = self.sprite_provider.murphy_moving_left_list[round(progress * 14)]
+                self.sprite = SpriteProvider.murphy_moving_left[round(progress * 14)]
 
             elif self.direction in ["right", "down"]:
-                self.sprite = self.sprite_provider.murphy_moving_right_list[round(progress * 14)]
+                self.sprite = SpriteProvider.murphy_moving_right[round(progress * 14)]
