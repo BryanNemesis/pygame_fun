@@ -1,5 +1,8 @@
 import pygame
 from character import Character
+from fields.base import Base
+from fields.empty import Empty
+from itertools import chain
 from level import Level
 from sprite_provider import SpriteProvider
 
@@ -48,6 +51,13 @@ player = Character(CELL_SIZE_PX)
 player.set_to_level(level, pygame.Vector2(0, 0))
 
 
+# Fill the whole level with bases for now
+for cell in chain(*(level.cells)):
+    cell.field = Base(cell.pos)
+    if cell.pos == pygame.Vector2(0, 0):
+        cell.field = Empty(cell.pos)
+
+
 # Game loop
 while running:
     # Read inputs
@@ -67,7 +77,10 @@ while running:
 
     # Draw the level
     level.surface.fill("black")
-    level.draw_coordinates()
+
+    # Draw shit onto the level
+    for cell in chain(*(level.cells)):
+        level.surface.blit(cell.field.sprite, cell.pos * CELL_SIZE_PX)
 
     # Draw the player onto the level
     player.update_pos(dt)

@@ -4,6 +4,13 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from game_field_experiment.character import Character
+    from fields.field import Field
+
+
+class Cell:
+    def __init__(self, x: int, y=int, field: "Field" = None):
+        self.pos = pygame.Vector2(x, y)
+        self.field = field
 
 
 class Level:
@@ -14,24 +21,10 @@ class Level:
 
         self._font = pygame.font.Font("../Bittypix Monospace.otf", 8)
 
-        # Top left pixel of each cell
         self.cells = [
-            [pygame.Vector2(x, y) * cell_size_px for x in range(int(dimensions.x))]
+            [Cell(x, y) for x in range(int(dimensions.x))]
             for y in range(int(dimensions.y))
         ]
-
-    # Draw coordinates on each level cell
-    def draw_coordinates(self):
-        for x, row in enumerate(self.cells):
-            for y, cell in enumerate(row):
-                text = f"{x},{y}"
-                text_surface = self._font.render(text, False, "#22ff00")
-                text_rect = text_surface.get_rect()
-                text_rect.center = [
-                    cell.x + self.cell_size_px // 2,
-                    cell.y + self.cell_size_px // 2,
-                ]
-                self.surface.blit(text_surface, text_rect)
 
     # calculate the offset of the level within a view, expressed in number of cells.
     # offset is based on the character's position within the level and its proximity to level borders.

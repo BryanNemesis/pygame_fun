@@ -1,6 +1,7 @@
 import pygame
 from sprite_provider import SpriteProvider
 from typing import TYPE_CHECKING
+from fields.empty import Empty
 
 if TYPE_CHECKING:
     from game_field_experiment.level import Level
@@ -57,14 +58,16 @@ class Character(pygame.Surface):
     # Move the character towards the target_position based on its move speed.
     def update_pos(self, dt: float):
         if self.moving:
-            self.pos += (
-                Character.direction_vectors[self.direction] * dt / self.mspd
-            )
+            self.pos += Character.direction_vectors[self.direction] * dt / self.mspd
 
             if (self.target_pos - self.pos).magnitude_squared() < 0.002:
                 self.pos = self.target_pos.copy()
                 self.moving = False
                 self.direction = None
+
+                current_cell = self.level.cells[int(self.pos.y)][int(self.pos.x)]
+                if current_cell.field.edible:
+                    current_cell.field = Empty(self.pos)
 
     def update_sprite(self, pressed):
         if (

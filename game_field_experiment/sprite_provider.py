@@ -49,6 +49,10 @@ class SpriteProvider:
             ]
         )
 
+        # Level fields
+        cls.empty = cls._prep_sprite(cls._fixed, 0, 0)
+        cls.base = cls._prep_sprite(cls._fixed, 2, 0)
+
     @classmethod
     def _prep_sprite(
         cls,
