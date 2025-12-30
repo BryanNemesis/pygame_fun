@@ -1,6 +1,9 @@
 import pygame
 from character import Character
 from fields.base import Base
+from fields.chip import Chip
+from fields.hardware import Hardware
+from fields.exit import Exit
 from fields.empty import Empty
 from itertools import chain
 from level import Level
@@ -20,7 +23,7 @@ VIEW_DIMENSIONS = pygame.Vector2(9, 7)
 
 # Size of the level expressed in amount of cells
 # Must be bigger than the view dimensions
-LEVEL_DIMENSIONS = pygame.Vector2(12, 12)
+LEVEL_DIMENSIONS = pygame.Vector2(10, 10)
 
 # Offset of the game view within the screen in pixels
 VIEW_OFFSET_TOP, VIEW_OFFSET = 50, 20
@@ -48,15 +51,45 @@ SpriteProvider.initialize()
 
 # Create player character
 player = Character(CELL_SIZE_PX)
-player.set_to_level(level, pygame.Vector2(0, 0))
+player.set_to_level(level, pygame.Vector2(1, 1))
 
-
-# Fill the whole level with bases for now
+# Construct the level like a total fuckin noob
 for cell in chain(*(level.cells)):
     cell.field = Base(cell.pos)
-    if cell.pos == pygame.Vector2(0, 0):
-        cell.field = Empty(cell.pos)
 
+    if cell.pos.x in [0, LEVEL_DIMENSIONS.x - 1] or cell.pos.y in [
+        0,
+        LEVEL_DIMENSIONS.y - 1,
+    ]:
+        cell.field = Hardware(cell.pos)
+
+    if cell.pos == pygame.Vector2(1, 1):
+        cell.field = Empty(cell.pos)
+    if cell.pos == pygame.Vector2(2, 2):
+        cell.field = Chip(cell.pos)
+    if cell.pos == pygame.Vector2(3, 1):
+        cell.field = Chip(cell.pos)
+    if cell.pos == pygame.Vector2(4, 3):
+        cell.field = Chip(cell.pos)
+    if cell.pos == pygame.Vector2(5, 3):
+        cell.field = Chip(cell.pos)
+    if cell.pos == pygame.Vector2(4, 5):
+        cell.field = Chip(cell.pos)
+    if cell.pos == pygame.Vector2(4, 6):
+        cell.field = Chip(cell.pos)
+    if cell.pos == pygame.Vector2(4, 7):
+        cell.field = Chip(cell.pos)
+    if cell.pos == pygame.Vector2(4, 8):
+        cell.field = Chip(cell.pos)
+    if cell.pos == pygame.Vector2(8, 7):
+        cell.field = Chip(cell.pos)
+
+    if cell.pos == pygame.Vector2(8, 8):
+        cell.field = Exit(cell.pos)
+
+winner = pygame.image.load("assets/winner.png")
+winner_rect = winner.get_rect()
+winner_rect.center = (screen.get_width() / 2, screen.get_height() / 2)
 
 # Game loop
 while running:
@@ -100,6 +133,9 @@ while running:
     # Draw the view within the screen
     screen.fill("#3F3F3F")
     screen.blit(view, (VIEW_OFFSET, VIEW_OFFSET_TOP))
+
+    if player.win:
+        screen.blit(winner, winner_rect)
 
     # Display the game
     pygame.display.set_caption("supaplex ultimate")

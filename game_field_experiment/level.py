@@ -19,8 +19,6 @@ class Level:
         self.surface = pygame.Surface(self.size * cell_size_px)
         self.cell_size_px = cell_size_px
 
-        self._font = pygame.font.Font("../Bittypix Monospace.otf", 8)
-
         self.cells = [
             [Cell(x, y) for x in range(int(dimensions.x))]
             for y in range(int(dimensions.y))
@@ -58,3 +56,4 @@ class Level:
             offset.y = self.size.y - view_dimensions.y
 
         return offset
+    

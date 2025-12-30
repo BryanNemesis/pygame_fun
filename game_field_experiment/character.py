@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from fields.empty import Empty
 
 if TYPE_CHECKING:
-    from game_field_experiment.level import Level
+    from game_field_experiment.level import Cell, Level
 
 
 class Character(pygame.Surface):
@@ -25,41 +25,56 @@ class Character(pygame.Surface):
         # How many miliseconds it takes to cross 1 field
         self.mspd = 200
 
+        self.win = False
+
     # Put the character onto a level on the given position
     def set_to_level(self, level: "Level", position=pygame.Vector2(0, 0)):
         self.level = level
         self.pos = position.copy()
         self.target_pos = position.copy()
 
+    def _touching_border(self, direction: str) -> bool:
+        match direction:
+            case "up":
+                return self.pos.y == 0
+            case "down":
+                return self.pos.y == self.level.size.y - 1
+            case "left":
+                return self.pos.x == 0
+            case "right":
+                return self.pos.y == self.level.size.y - 1
+                
+    def _move(self, direction: str):
+        if not (self.moving or self._touching_border(direction)):
+            target_pos = self.pos + self.direction_vectors[direction]
+            target_cell: "Cell" = self.level.cells[int(target_pos.y)][int(target_pos.x)]
+
+            if target_cell.field.exit:
+                self.win = True
+
+            if not target_cell.field.solid:
+                self.moving = True
+                self.direction = direction
+                self.target_pos = target_pos
+
     def move_up(self):
-        if not self.moving and self.pos.y > 0:
-            self.moving = True
-            self.direction = "up"
-            self.target_pos.y -= 1
-
+        return self._move("up")
+    
     def move_down(self):
-        if not self.moving and self.pos.y < self.level.size.y - 1:
-            self.moving = True
-            self.direction = "down"
-            self.target_pos.y += 1
-
+        return self._move("down")
+    
     def move_left(self):
-        if not self.moving and self.pos.x > 0:
-            self.moving = True
-            self.direction = "left"
-            self.target_pos.x -= 1
+        return self._move("left")
 
     def move_right(self):
-        if not self.moving and self.pos.x < self.level.size.x - 1:
-            self.moving = True
-            self.direction = "right"
-            self.target_pos.x += 1
+        return self._move("right")
 
     # Move the character towards the target_position based on its move speed.
     def update_pos(self, dt: float):
         if self.moving:
             self.pos += Character.direction_vectors[self.direction] * dt / self.mspd
 
+            # End movement when player has landed on the target_pos
             if (self.target_pos - self.pos).magnitude_squared() < 0.002:
                 self.pos = self.target_pos.copy()
                 self.moving = False
@@ -77,6 +92,7 @@ class Character(pygame.Surface):
             and not pressed[pygame.K_LEFT]
             and not pressed[pygame.K_RIGHT]
         ):
+            # TODO: let's not update it every frame when it's not moving
             self.sprite = SpriteProvider.murphy
 
         elif self.direction:

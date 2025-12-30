@@ -7,14 +7,14 @@ class SpriteProvider:
     target_size = 48
 
     def __init__(self):
-        raise RuntimeError('Use the SpriteProvider class directly')
+        raise RuntimeError("Use the SpriteProvider class directly")
 
     @classmethod
     def initialize(cls):
 
         # Load the files containing the sprites
-        cls._fixed = pygame.image.load("./assets/sprites/Megaplex_Sprites/FIXED.GIF")
-        cls._moving = pygame.image.load("./assets/sprites/Megaplex_Sprites/MOVING.GIF")
+        cls._fixed = pygame.image.load("./assets/Megaplex_Sprites/FIXED.GIF")
+        cls._moving = pygame.image.load("./assets/Megaplex_Sprites/MOVING.GIF")
 
         # Map regions of the sprites to specific game elements
 
@@ -52,6 +52,15 @@ class SpriteProvider:
         # Level fields
         cls.empty = cls._prep_sprite(cls._fixed, 0, 0)
         cls.base = cls._prep_sprite(cls._fixed, 2, 0)
+
+        # Chip
+        cls.chip_normal = cls._prep_sprite(cls._fixed, 5, 0)
+
+        # Hardware
+        cls.hw_normal = cls._prep_sprite(cls._fixed, 6, 0)
+
+        # Exit
+        cls.exit = cls._prep_sprite(cls._fixed, 7, 0)
 
     @classmethod
     def _prep_sprite(
