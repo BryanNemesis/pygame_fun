@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 
 class Character(pygame.Surface):
-    direction_vectors = {
+    _direction_vectors = {
         "left": pygame.Vector2((-1, 0)),
         "right": pygame.Vector2((1, 0)),
         "up": pygame.Vector2((0, -1)),
@@ -46,8 +46,8 @@ class Character(pygame.Surface):
                 
     def _move(self, direction: str):
         if not (self.moving or self._touching_border(direction)):
-            target_pos = self.pos + self.direction_vectors[direction]
-            target_cell: "Cell" = self.level.cells[int(target_pos.y)][int(target_pos.x)]
+            target_pos = self.pos + self._direction_vectors[direction]
+            target_cell: "Cell" = self.level.cells[int(target_pos.x)][int(target_pos.y)]
 
             if target_cell.field.exit:
                 self.win = True
@@ -72,7 +72,7 @@ class Character(pygame.Surface):
     # Move the character towards the target_position based on its move speed.
     def update_pos(self, dt: float):
         if self.moving:
-            self.pos += Character.direction_vectors[self.direction] * dt / self.mspd
+            self.pos += Character._direction_vectors[self.direction] * dt / self.mspd
 
             # End movement when player has landed on the target_pos
             if (self.target_pos - self.pos).magnitude_squared() < 0.002:
@@ -80,7 +80,7 @@ class Character(pygame.Surface):
                 self.moving = False
                 self.direction = None
 
-                current_cell = self.level.cells[int(self.pos.y)][int(self.pos.x)]
+                current_cell = self.level.cells[int(self.pos.x)][int(self.pos.y)]
                 if current_cell.field.edible:
                     current_cell.field = Empty(self.pos)
 
@@ -97,7 +97,7 @@ class Character(pygame.Surface):
 
         elif self.direction:
             # pretty good measure of progress of movement to the next cell
-            progress = abs(self.direction_vectors[self.direction] * self.pos) % 1
+            progress = abs(self._direction_vectors[self.direction] * self.pos) % 1
 
             if self.direction in ["left", "up"]:
                 self.sprite = SpriteProvider.murphy_moving_left[round(progress * 14)]

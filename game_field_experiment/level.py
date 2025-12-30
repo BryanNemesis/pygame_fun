@@ -20,8 +20,8 @@ class Level:
         self.cell_size_px = cell_size_px
 
         self.cells = [
-            [Cell(x, y) for x in range(int(dimensions.x))]
-            for y in range(int(dimensions.y))
+            [Cell(x, y) for y in range(int(dimensions.y))]
+            for x in range(int(dimensions.x))
         ]
 
     # calculate the offset of the level within a view, expressed in number of cells.
