@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from fields.empty import Empty
 
 if TYPE_CHECKING:
-    from game_field_experiment.level import Cell, Level
+    from supaplex.level import Cell, Level
 
 
 class Character(pygame.Surface):

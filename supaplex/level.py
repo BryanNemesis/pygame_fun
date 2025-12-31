@@ -3,7 +3,7 @@ import math
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from game_field_experiment.character import Character
+    from supaplex.character import Character
     from fields.field import Field
 
 
