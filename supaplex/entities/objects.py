@@ -13,7 +13,9 @@ class Object(Entity):
     def __init__(self, pos: pygame.Vector2, level: "Level"):
         super().__init__(pos)
         self.target_pos = pos.copy()
+        self.last_pos = pos.copy()
         self.level = level
+        self.level.cells[int(pos.x)][int(pos.y)].entity = self
 
     def update_pos(self, dt):
         raise NotImplementedError
@@ -44,11 +46,11 @@ class Stone(Object):
                 self.falling = False
 
                 current_cell = self.level.cells[int(self.pos.x)][int(self.pos.y)]
-                current_cell.field = self
+                current_cell.entity = self
 
                 above_pos = self.pos - Stone.down_vector
                 cell_above: Cell = self.level.cells[int(above_pos.x)][int(above_pos.y)]
-                cell_above.field = Empty(above_pos)
+                cell_above.entity = Empty(above_pos)
 
         if not self.falling:
             # See what's below
@@ -56,7 +58,7 @@ class Stone(Object):
             cell_below: Cell = self.level.cells[int(below_pos.x)][int(below_pos.y)]
 
             # Begin the fall
-            if isinstance(cell_below.field, Empty):
+            if isinstance(cell_below.entity, Empty):
                 self.falling = True
                 self.target_pos = below_pos
-                cell_below.field = self
+                cell_below.entity = self

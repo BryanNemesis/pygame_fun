@@ -3,14 +3,14 @@ import math
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from supaplex.character import Character
+    from supaplex.entities.character import Character
     from supaplex.entities.entity import Entity
 
 
 class Cell:
-    def __init__(self, x: int, y=int, field: "Entity" = None):
+    def __init__(self, x: int, y=int, entity: "Entity" = None):
         self.pos = pygame.Vector2(x, y)
-        self.field = field
+        self.entity = entity
 
 
 class Level:

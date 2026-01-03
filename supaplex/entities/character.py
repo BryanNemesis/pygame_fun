@@ -2,13 +2,14 @@ import pygame
 from sprite_provider import SpriteProvider
 from typing import TYPE_CHECKING
 from entities.fields import Empty, Exit
+from entities.objects import Object
 
 if TYPE_CHECKING:
     from supaplex.level import Cell, Level
     from supaplex.entities.fields import Field
 
 
-class Character(pygame.Surface):
+class Character(Object):
     _direction_vectors = {
         "left": pygame.Vector2((-1, 0)),
         "right": pygame.Vector2((1, 0)),
@@ -16,23 +17,15 @@ class Character(pygame.Surface):
         "down": pygame.Vector2((0, 1)),
     }
 
-    def __init__(self, size_px):
-        super().__init__((size_px, size_px))
+    def __init__(self, pos: pygame.Vector2, level: "Level"):
+        super().__init__(pos, level)
         self.sprite = SpriteProvider.murphy
-
         self.moving = False
         self.direction = None
 
         # How many miliseconds it takes to cross 1 field
         self.mspd = 200
-
         self.win = False
-
-    # Put the character onto a level on the given position
-    def set_to_level(self, level: "Level", position=pygame.Vector2(0, 0)):
-        self.level = level
-        self.pos = position.copy()
-        self.target_pos = position.copy()
 
     def _touching_border(self, direction: str) -> bool:
         match direction:
@@ -50,13 +43,17 @@ class Character(pygame.Surface):
             target_pos = self.pos + self._direction_vectors[direction]
             target_cell: "Cell" = self.level.cells[int(target_pos.x)][int(target_pos.y)]
 
-            if isinstance(target_cell.field, Exit):
+            if isinstance(target_cell.entity, Exit):
                 self.win = True
 
-            if not target_cell.field.solid:
+            # Initiate movement
+            if not target_cell.entity.solid:
                 self.moving = True
                 self.direction = direction
+                self.last_pos = self.pos.copy()
                 self.target_pos = target_pos
+                # Until the end of the movement, Murhpy will occupy 2 cells on the level
+                target_cell.entity = self
 
     def move_up(self):
         return self._move("up")
@@ -81,9 +78,10 @@ class Character(pygame.Surface):
                 self.moving = False
                 self.direction = None
 
-                current_cell: Field = self.level.cells[int(self.pos.x)][int(self.pos.y)]
-                if current_cell.field.edible:
-                    current_cell.field = Empty(self.pos)
+                # Free the previously occupied cell
+                previous_cell: Cell = self.level.cells[int(self.last_pos.x)][int(self.last_pos.y)]
+                previous_cell.entity = Empty(self.last_pos)
+
 
     def update_sprite(self, pressed):
         if (
