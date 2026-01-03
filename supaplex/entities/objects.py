@@ -32,7 +32,7 @@ class Stone(Object):
 
         self.falling = False
         # How many miliseconds it takes to fall 1 field
-        self.fall_speed = 500
+        self.fall_speed = 200
 
     def update_pos(self, dt: float):
         # Continue the fall

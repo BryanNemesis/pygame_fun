@@ -1,14 +1,10 @@
 import pygame
-from entities.character import Character
-from entities.fields import Field, Base, Chip, Empty, Exit, Hardware
-from entities.objects import Object, Stone
+from entities.fields import Field
 from itertools import chain
-from level import Level
+from level_parser import LevelParser
 from sprite_provider import SpriteProvider
-from typing import List
 
 pygame.init()
-
 
 # Define constants
 
@@ -18,10 +14,6 @@ CELL_SIZE_PX = 48
 # Size of the game view expressed in amount of cells
 # Must be odd numbers to be able to center the character within the view
 VIEW_DIMENSIONS = pygame.Vector2(9, 7)
-
-# Size of the level expressed in amount of cells
-# Must be bigger than the view dimensions
-LEVEL_DIMENSIONS = pygame.Vector2(10, 10)
 
 # Offset of the game view within the screen in pixels
 VIEW_OFFSET_TOP, VIEW_OFFSET = 50, 20
@@ -39,67 +31,12 @@ screen = pygame.display.set_mode(
     ]
 )
 
-# Create view
 view = pygame.Surface(VIEW_DIMENSIONS * CELL_SIZE_PX)
-
-# Create level
-level = Level(LEVEL_DIMENSIONS, CELL_SIZE_PX)
 
 SpriteProvider.initialize()
 
-# Create player character
-player = Character(pygame.Vector2(1, 3), level)
-
-# Construct the level like a total fuckin noob
-objects: List[Object] = []
-
-for cell in chain(*(level.cells)):
-    cell.entity = Base(cell.pos)
-
-    if cell.pos.x in [0, LEVEL_DIMENSIONS.x - 1] or cell.pos.y in [
-        0,
-        LEVEL_DIMENSIONS.y - 1,
-    ]:
-        cell.entity = Hardware(cell.pos)
-
-    if cell.pos == pygame.Vector2(1, 1):
-        cell.entity = Empty(cell.pos)
-    if cell.pos == pygame.Vector2(1, 3):
-        cell.entity = Empty(cell.pos)
-    if cell.pos == pygame.Vector2(3, 1):
-        cell.entity = Chip(cell.pos)
-    if cell.pos == pygame.Vector2(4, 3):
-        cell.entity = Chip(cell.pos)
-    if cell.pos == pygame.Vector2(5, 3):
-        cell.entity = Chip(cell.pos)
-    if cell.pos == pygame.Vector2(4, 5):
-        cell.entity = Chip(cell.pos)
-    if cell.pos == pygame.Vector2(4, 6):
-        cell.entity = Chip(cell.pos)
-    if cell.pos == pygame.Vector2(4, 7):
-        cell.entity = Chip(cell.pos)
-    if cell.pos == pygame.Vector2(4, 8):
-        cell.entity = Chip(cell.pos)
-    if cell.pos == pygame.Vector2(8, 7):
-        cell.entity = Chip(cell.pos)
-
-    if cell.pos == pygame.Vector2(2, 1):
-        cell.entity = stone = Stone(cell.pos, level)
-        objects.append(stone)
-    if cell.pos == pygame.Vector2(2, 2):
-        cell.entity = Empty(cell.pos)
-    if cell.pos == pygame.Vector2(2, 3):
-        cell.entity = Empty(cell.pos)
-    if cell.pos == pygame.Vector2(2, 4):
-        cell.entity = Empty(cell.pos)
-
-    if cell.pos == pygame.Vector2(5, 1):
-        cell.entity = stone = Stone(cell.pos, level)
-        objects.append(stone)
-    
-
-    if cell.pos == pygame.Vector2(8, 8):
-        cell.entity = Exit(cell.pos)
+level_parser = LevelParser("./test_level.txt", CELL_SIZE_PX)
+level, player, objects = level_parser.create_level()
 
 winner = pygame.image.load("assets/winner.png")
 winner_rect = winner.get_rect()
@@ -125,20 +62,16 @@ while running:
     # Draw the level
     level.surface.fill("black")
 
-    # Move everything and draw it onto the level
+    # Update all objects' positions and sprites and draw them onto the level
     for obj in objects:
         obj.update_pos(dt)
+        player.update_sprite(pressed)
         level.surface.blit(obj.sprite, obj.pos * CELL_SIZE_PX)
 
     # Draw fields onto the level
     for cell in chain(*(level.cells)):
         if isinstance(cell.entity, Field):
             level.surface.blit(cell.entity.sprite, cell.pos * CELL_SIZE_PX)
-
-    # Draw the player onto the level
-    player.update_pos(dt)
-    player.update_sprite(pressed)
-    level.surface.blit(player.sprite, player.pos * CELL_SIZE_PX)
 
     # Calculate the level's offset within the view
     level_offset = level.get_offset(player, VIEW_DIMENSIONS)
