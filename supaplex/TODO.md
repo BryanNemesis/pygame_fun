@@ -2,6 +2,7 @@ For now let's have all the key elements of the gameplay working and then we'll g
 
 # Features
   - Moving entities
+  - Make bases disappear gradually
   - Class for levels (rename current `Level` class to GameField or sth like that)
 
 # Refactors
