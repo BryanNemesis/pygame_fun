@@ -1,13 +1,16 @@
 import pygame
 from character import Character
+from fields.field import Field
 from fields.base import Base
 from fields.chip import Chip
 from fields.hardware import Hardware
 from fields.exit import Exit
 from fields.empty import Empty
+from fields.stone import Stone
 from itertools import chain
 from level import Level
 from sprite_provider import SpriteProvider
+from typing import List
 
 pygame.init()
 
@@ -54,6 +57,9 @@ player = Character(CELL_SIZE_PX)
 player.set_to_level(level, pygame.Vector2(1, 1))
 
 # Construct the level like a total fuckin noob
+# TODO: make a FallingObject class
+falling_objects: List[Stone] = []
+
 for cell in chain(*(level.cells)):
     cell.field = Base(cell.pos)
 
@@ -62,6 +68,8 @@ for cell in chain(*(level.cells)):
         LEVEL_DIMENSIONS.y - 1,
     ]:
         cell.field = Hardware(cell.pos)
+
+
 
     if cell.pos == pygame.Vector2(1, 1):
         cell.field = Empty(cell.pos)
@@ -83,6 +91,21 @@ for cell in chain(*(level.cells)):
         cell.field = Chip(cell.pos)
     if cell.pos == pygame.Vector2(8, 7):
         cell.field = Chip(cell.pos)
+
+    if cell.pos == pygame.Vector2(4, 1):
+        cell.field = stone = Stone(cell.pos, level)
+        falling_objects.append(stone)
+    if cell.pos == pygame.Vector2(4, 2):
+        cell.field = Empty(cell.pos)
+    if cell.pos == pygame.Vector2(4, 3):
+        cell.field = Empty(cell.pos)
+    if cell.pos == pygame.Vector2(4, 4):
+        cell.field = Empty(cell.pos)
+
+    if cell.pos == pygame.Vector2(5, 1):
+        cell.field = stone = Stone(cell.pos, level)
+        falling_objects.append(stone)
+    
 
     if cell.pos == pygame.Vector2(8, 8):
         cell.field = Exit(cell.pos)
@@ -110,6 +133,10 @@ while running:
 
     # Draw the level
     level.surface.fill("black")
+
+    # Attempt to fall whatever can fall
+    for obj in falling_objects:
+        obj.update_pos(dt)
 
     # Draw shit onto the level
     for cell in chain(*(level.cells)):
@@ -142,7 +169,7 @@ while running:
     pygame.display.flip()
 
     # Tick the clock
-    dt = clock.tick(60)
+    dt = pygame.math.clamp(clock.tick(60), 0, 50)
 
 
 pygame.quit()

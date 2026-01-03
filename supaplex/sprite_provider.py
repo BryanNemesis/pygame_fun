@@ -50,7 +50,9 @@ class SpriteProvider:
         )
 
         # Level fields
+        # TODO: empty field probably should not have a sprite and be drawn at all
         cls.empty = cls._prep_sprite(cls._fixed, 0, 0)
+        cls.empty.set_alpha(0)
         cls.base = cls._prep_sprite(cls._fixed, 2, 0)
 
         # Chip
@@ -61,6 +63,9 @@ class SpriteProvider:
 
         # Exit
         cls.exit = cls._prep_sprite(cls._fixed, 7, 0)
+
+        # Stone
+        cls.stone = cls._prep_sprite(cls._fixed, 1, 0)
 
     @classmethod
     def _prep_sprite(

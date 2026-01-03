@@ -9,6 +9,7 @@ class Field:
         self.solid = False
         self.destructible = False
         self.exit = False
+        self.has_weight = False
 
     def __str__(self):
         return f"{type(self).__name__} at ({int(self.pos.x)}, {int(self.pos.y)})"
