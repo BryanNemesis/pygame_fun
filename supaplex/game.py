@@ -1,7 +1,7 @@
 import pygame
 from character import Character
-from entities.fields import Base, Chip, Empty, Exit, Hardware
-from entities.objects import Stone
+from entities.fields import Field, Base, Chip, Empty, Exit, Hardware
+from entities.objects import Object, Stone
 from itertools import chain
 from level import Level
 from sprite_provider import SpriteProvider
@@ -52,8 +52,7 @@ player = Character(CELL_SIZE_PX)
 player.set_to_level(level, pygame.Vector2(1, 1))
 
 # Construct the level like a total fuckin noob
-# TODO: make a FallingObject class
-falling_objects: List[Stone] = []
+objects: List[Object] = []
 
 for cell in chain(*(level.cells)):
     cell.field = Base(cell.pos)
@@ -63,8 +62,6 @@ for cell in chain(*(level.cells)):
         LEVEL_DIMENSIONS.y - 1,
     ]:
         cell.field = Hardware(cell.pos)
-
-
 
     if cell.pos == pygame.Vector2(1, 1):
         cell.field = Empty(cell.pos)
@@ -89,7 +86,7 @@ for cell in chain(*(level.cells)):
 
     if cell.pos == pygame.Vector2(4, 1):
         cell.field = stone = Stone(cell.pos, level)
-        falling_objects.append(stone)
+        objects.append(stone)
     if cell.pos == pygame.Vector2(4, 2):
         cell.field = Empty(cell.pos)
     if cell.pos == pygame.Vector2(4, 3):
@@ -99,7 +96,7 @@ for cell in chain(*(level.cells)):
 
     if cell.pos == pygame.Vector2(5, 1):
         cell.field = stone = Stone(cell.pos, level)
-        falling_objects.append(stone)
+        objects.append(stone)
     
 
     if cell.pos == pygame.Vector2(8, 8):
@@ -129,13 +126,15 @@ while running:
     # Draw the level
     level.surface.fill("black")
 
-    # Attempt to fall whatever can fall
-    for obj in falling_objects:
+    # Move everything and draw it onto the level
+    for obj in objects:
         obj.update_pos(dt)
+        level.surface.blit(obj.sprite, obj.pos * CELL_SIZE_PX)
 
-    # Draw shit onto the level
+    # Draw fields onto the level
     for cell in chain(*(level.cells)):
-        level.surface.blit(cell.field.sprite, cell.pos * CELL_SIZE_PX)
+        if isinstance(cell.field, Field):
+            level.surface.blit(cell.field.sprite, cell.pos * CELL_SIZE_PX)
 
     # Draw the player onto the level
     player.update_pos(dt)

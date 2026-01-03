@@ -26,7 +26,7 @@ class Base(Field):
         self.edible = True
 
 
-class Chip(Entity):
+class Chip(Field):
     def __init__(self, pos: pygame.Vector2, variant="normal"):
         super().__init__(pos)
         self.solid = True
@@ -36,7 +36,7 @@ class Chip(Entity):
                 self.sprite = SpriteProvider.chip_normal
 
 
-class Hardware(Entity):
+class Hardware(Field):
     def __init__(self, pos: pygame.Vector2, variant="normal"):
         super().__init__(pos)
         self.solid = True
@@ -46,7 +46,7 @@ class Hardware(Entity):
                 self.sprite = SpriteProvider.hw_normal
 
 
-class Exit(Entity):
+class Exit(Field):
     def __init__(self, pos: pygame.Vector2):
         super().__init__(pos)
         self.solid = True
