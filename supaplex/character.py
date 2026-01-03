@@ -1,10 +1,11 @@
 import pygame
 from sprite_provider import SpriteProvider
 from typing import TYPE_CHECKING
-from fields.empty import Empty
+from entities.fields import Empty, Exit
 
 if TYPE_CHECKING:
     from supaplex.level import Cell, Level
+    from supaplex.entities.fields import Field
 
 
 class Character(pygame.Surface):
@@ -49,7 +50,7 @@ class Character(pygame.Surface):
             target_pos = self.pos + self._direction_vectors[direction]
             target_cell: "Cell" = self.level.cells[int(target_pos.x)][int(target_pos.y)]
 
-            if target_cell.field.exit:
+            if isinstance(target_cell.field, Exit):
                 self.win = True
 
             if not target_cell.field.solid:
@@ -80,7 +81,7 @@ class Character(pygame.Surface):
                 self.moving = False
                 self.direction = None
 
-                current_cell = self.level.cells[int(self.pos.x)][int(self.pos.y)]
+                current_cell: Field = self.level.cells[int(self.pos.x)][int(self.pos.y)]
                 if current_cell.field.edible:
                     current_cell.field = Empty(self.pos)
 

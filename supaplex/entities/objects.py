@@ -1,35 +1,42 @@
 import pygame
-from fields.field import Field
-from fields.empty import Empty
+from entities.entity import Entity
+from entities.fields import Empty
 from sprite_provider import SpriteProvider
 from typing import TYPE_CHECKING
-
 
 if TYPE_CHECKING:
     from supaplex.level import Cell, Level
 
-class Stone(Field):
-    down_vector = pygame.Vector2((0, 1))
-
+# Objects (what a name!) are entities that can move,
+# and therefore they have to be accept a Level as a parameter.
+class Object(Entity):
     def __init__(self, pos: pygame.Vector2, level: "Level"):
         super().__init__(pos)
+        self.target_pos = pos.copy()
+        self.level = level
+
+    def update_pos(self, dt):
+        raise NotImplementedError
+
+
+class Stone(Object):
+    down_vector = pygame.Vector2((0, 1))
+    
+    def __init__(self, pos: pygame.Vector2, level: "Level"):
+        super().__init__(pos, level)
+        # TODO: this parameter should be for fields
         self.solid = True
-        self.has_weight = True
         self.sprite = SpriteProvider.stone
 
-        self.level = level
-        self.target_pos = pos.copy()
         self.falling = False
-
         # How many miliseconds it takes to fall 1 field
-        self.mspd = 2000
+        self.fall_speed = 2000
 
     def update_pos(self, dt: float):
         # Continue the fall
         if self.falling:
-            diff = Stone.down_vector * dt / self.mspd
+            diff = Stone.down_vector * dt / self.fall_speed
             self.pos += diff
-
 
             # End movement when stone has landed on the target_pos
             if (self.target_pos - self.pos).magnitude_squared() < 0.002:

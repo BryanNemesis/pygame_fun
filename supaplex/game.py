@@ -1,12 +1,7 @@
 import pygame
 from character import Character
-from fields.field import Field
-from fields.base import Base
-from fields.chip import Chip
-from fields.hardware import Hardware
-from fields.exit import Exit
-from fields.empty import Empty
-from fields.stone import Stone
+from entities.fields import Base, Chip, Empty, Exit, Hardware
+from entities.objects import Stone
 from itertools import chain
 from level import Level
 from sprite_provider import SpriteProvider
